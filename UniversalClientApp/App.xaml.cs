@@ -20,6 +20,7 @@ using Windows.Networking.PushNotifications;
 using System.Net.Http;
 using System.Threading;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace UniversalClientApp
 {
@@ -39,27 +40,14 @@ namespace UniversalClientApp
         }
 
         public static MobileServiceClient MobileService = new MobileServiceClient(
-            "https://pbjobs.azurewebsites.net", new InterceptHttpHandler()
+            "https://pbjobs.azurewebsites.net"            
         );
-
-        private class InterceptHttpHandler : DelegatingHandler
-        {
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-            {
-                var registrationUri = new Uri("https://pbjobs.scm.azurewebsites.net/api/continuouswebjobs/NotificationHubsWebJob/passthrough/deviceregistration/register");                
-                request.RequestUri = registrationUri;
-                request.Method = HttpMethod.Post;
-                request.Headers.Add("Authorization", Keys.KuduAuthorization);
-                
-                return base.SendAsync(request, cancellationToken);
-            }
-        }
 
         private async Task InitNotificationsAsync()
         {
             // Get a channel URI from WNS.
             var channel = await PushNotificationChannelManager
-                .CreatePushNotificationChannelForApplicationAsync();
+                .CreatePushNotificationChannelForApplicationAsync();            
 
             // Register the channel URI with Notification Hubs.
             await App.MobileService.GetPush().RegisterAsync(channel.Uri);
