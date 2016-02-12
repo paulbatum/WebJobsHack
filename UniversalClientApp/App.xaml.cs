@@ -47,10 +47,20 @@ namespace UniversalClientApp
         {
             // Get a channel URI from WNS.
             var channel = await PushNotificationChannelManager
-                .CreatePushNotificationChannelForApplicationAsync();            
+                .CreatePushNotificationChannelForApplicationAsync();
+
+            var templates = JObject.Parse(@"{
+                ""generic-message"": {
+                    ""body"": ""<toast><visual><binding template=\""ToastText01\""><text id=\""1\"">{$(message) + 'template test'}</text></binding></visual></toast>"",
+                    ""headers"": {
+                        ""X-WNS-Type"": ""wns/toast""
+                    },
+                    ""tags"": []
+                }                
+            }");
 
             // Register the channel URI with Notification Hubs.
-            await App.MobileService.GetPush().RegisterAsync(channel.Uri);
+            await App.MobileService.GetPush().RegisterAsync(channel.Uri, templates);
         }
 
         /// <summary>
