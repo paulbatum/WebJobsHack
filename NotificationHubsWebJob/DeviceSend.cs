@@ -38,5 +38,30 @@ namespace NotificationHubsWebJob
                 trace.Error(ex.Message, null, "Push.SendAsync Error");
             }
         }
+
+        public static async Task CronJob([TimerTrigger("*/15 * * * * *")] TimerInfo timerInfo, TraceWriter trace)
+        {
+            var nhConnectionString = ConfigurationManager.ConnectionStrings["MS_NotificationHubConnectionString"].ConnectionString;
+
+            // Create the notification hub client.
+            NotificationHubClient hub = NotificationHubClient
+                .CreateClientFromConnectionString(nhConnectionString, "pbjobs");
+            
+            try
+            {
+                // Send the push notification.
+                //var result = await hub.SendWindowsNativeNotificationAsync(windowsToastPayload);
+                var result = await hub.SendTemplateNotificationAsync(new Dictionary<string, string> { ["message"] = "foo" });
+
+                // Write the success result to the logs.
+                trace.Info(result.State.ToString());
+            }
+            catch (System.Exception ex)
+            {
+                // Write the failure result to the logs.
+                trace.Error(ex.Message, null, "Push.SendAsync Error");
+            }
+        }
+
     }
 }
