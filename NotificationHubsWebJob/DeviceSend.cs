@@ -39,6 +39,7 @@ namespace NotificationHubsWebJob
             }
         }
 
+        
         public static async Task CronJob([TimerTrigger("*/15 * * * * *")] TimerInfo timerInfo, TraceWriter trace)
         {
             var nhConnectionString = ConfigurationManager.ConnectionStrings["MS_NotificationHubConnectionString"].ConnectionString;
@@ -51,7 +52,9 @@ namespace NotificationHubsWebJob
             {
                 // Send the push notification.
                 //var result = await hub.SendWindowsNativeNotificationAsync(windowsToastPayload);
-                var result = await hub.SendTemplateNotificationAsync(new Dictionary<string, string> { ["message"] = "foo" });
+                var notification = new TemplateNotification(new Dictionary<string, string> { ["message"] = "foo" });
+                //hub.SendNotificationAsync()
+                var result = await hub.SendNotificationAsync(notification);
 
                 // Write the success result to the logs.
                 trace.Info(result.State.ToString());
