@@ -14,7 +14,7 @@ namespace WebJobs.NotificationHubs
 
         public NotificationHubConfiguration()
         {
-            ConnectionString = ConfigurationManager.ConnectionStrings[NotificationHubConnectionStringName].ConnectionString;
+            ConnectionString = ConfigurationManager.ConnectionStrings[NotificationHubConnectionStringName]?.ConnectionString;
             if(string.IsNullOrEmpty(ConnectionString))
             {
                 ConnectionString = Environment.GetEnvironmentVariable(NotificationHubConnectionStringName);

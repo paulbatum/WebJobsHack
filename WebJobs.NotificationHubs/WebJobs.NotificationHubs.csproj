@@ -96,7 +96,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bindings\NotificationHubAttributeBindingProvider.cs" />
-    <Compile Include="Bindings\NotificationHubBinding.cs" />
+    <Compile Include="Common\CommonCollectorBinding.cs" />
+    <Compile Include="Common\ConstantValueProvider.cs" />
+    <Compile Include="Common\ConverterManager.cs" />
+    <Compile Include="Common\GenericBinder.cs" />
+    <Compile Include="Common\IConverterManager.cs" />
+    <Compile Include="Common\IFlushCollector.cs" />
+    <Compile Include="Common\ITriggerBindingStrategy.cs" />
+    <Compile Include="Common\OutArgumentBinding\CommonAsyncCollectorValueProvider.cs" />
+    <Compile Include="Common\OutArgumentBinding\OutArrayValueProvider.cs" />
+    <Compile Include="Common\OutArgumentBinding\OutValueProvider.cs" />
+    <Compile Include="Common\SyncAsyncCollectorAdapter.cs" />
+    <Compile Include="Common\TypedAsyncCollectorAdapter.cs" />
     <Compile Include="Config\NotificationHubConfiguration.cs" />
     <Compile Include="Config\NotificationHubJobHostConfigurationExtensions.cs" />
     <Compile Include="NotificationHubAttribute.cs" />

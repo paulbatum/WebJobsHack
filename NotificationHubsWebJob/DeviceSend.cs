@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using WebJobs.NotificationHubs;
 
 namespace NotificationHubsWebJob
 {
@@ -40,30 +41,9 @@ namespace NotificationHubsWebJob
         }
 
         
-        public static async Task CronJob([TimerTrigger("*/15 * * * * *")] TimerInfo timerInfo, TraceWriter trace)
+        public static void CronJob([TimerTrigger("*/15 * * * * *")] TimerInfo timerInfo, [NotificationHub] out Notification notification)
         {
-            var nhConnectionString = ConfigurationManager.ConnectionStrings["MS_NotificationHubConnectionString"].ConnectionString;
-
-            // Create the notification hub client.
-            NotificationHubClient hub = NotificationHubClient
-                .CreateClientFromConnectionString(nhConnectionString, "pbjobs");
-            
-            try
-            {
-                // Send the push notification.
-                //var result = await hub.SendWindowsNativeNotificationAsync(windowsToastPayload);
-                var notification = new TemplateNotification(new Dictionary<string, string> { ["message"] = "foo" });
-                //hub.SendNotificationAsync()
-                var result = await hub.SendNotificationAsync(notification);
-
-                // Write the success result to the logs.
-                trace.Info(result.State.ToString());
-            }
-            catch (System.Exception ex)
-            {
-                // Write the failure result to the logs.
-                trace.Error(ex.Message, null, "Push.SendAsync Error");
-            }
+            notification = new TemplateNotification(new Dictionary<string, string> { ["message"] = "foo" });
         }
 
     }

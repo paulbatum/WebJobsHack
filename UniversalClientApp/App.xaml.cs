@@ -51,7 +51,7 @@ namespace UniversalClientApp
 
             var templates = JObject.Parse(@"{
                 ""generic-message"": {
-                    ""body"": ""<toast><visual><binding template=\""ToastText01\""><text id=\""1\"">{$(message) + 'template test'}</text></binding></visual></toast>"",
+                    ""body"": ""<toast><visual><binding template=\""ToastText01\""><text id=\""1\"">$(message)</text></binding></visual></toast>"",
                     ""headers"": {
                         ""X-WNS-Type"": ""wns/toast""
                     },

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
+using WebJobs.NotificationHubs;
 
 namespace NotificationHubsWebJob
 {
@@ -17,6 +18,7 @@ namespace NotificationHubsWebJob
             var config = new JobHostConfiguration();
             config.UseWebHooks();
             config.UseTimers();
+            config.UseNotificationHubs(new NotificationHubConfiguration { HubName = "pbjobs" });
 
             var host = new JobHost(config);
             // The following code ensures that the WebJob will be running continuously

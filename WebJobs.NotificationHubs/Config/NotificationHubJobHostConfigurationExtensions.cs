@@ -22,7 +22,7 @@ namespace WebJobs.NotificationHubs
                 notificationHubConfig = new NotificationHubConfiguration();
             }
 
-            config.RegisterExtensionConfigProvider(null);
+            config.RegisterExtensionConfigProvider(new NotificationHubExtensionConfig(notificationHubConfig));
 
         }
 
@@ -30,7 +30,7 @@ namespace WebJobs.NotificationHubs
         {
             private readonly NotificationHubConfiguration _notificationHubConfig;
 
-            private NotificationHubExtensionConfig(NotificationHubConfiguration notificationHubConfig)
+            public NotificationHubExtensionConfig(NotificationHubConfiguration notificationHubConfig)
             {
                 _notificationHubConfig = notificationHubConfig;
             }
@@ -42,7 +42,7 @@ namespace WebJobs.NotificationHubs
                     throw new ArgumentNullException(nameof(context));
                 }
 
-                context.Config.RegisterBindingExtension(new NotificationHubAttributeBindingProvider(_notificationHubConfig, context.Config.NameResolver));
+                context.Config.RegisterBindingExtension(new NotificationHubAttributeBindingProvider(context.Config.NameResolver, _notificationHubConfig));
             }
         }
 
