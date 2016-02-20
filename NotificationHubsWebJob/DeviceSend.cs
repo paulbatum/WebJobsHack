@@ -25,5 +25,10 @@ namespace NotificationHubsWebJob
             notification = new TemplateNotification(new Dictionary<string, string> { ["message"] = "foo" });
         }
 
+        public static void CronJob2([TimerTrigger("*/15 * * * * *")] TimerInfo timerInfo, [NotificationHub] out TemplateNotification notification)
+        {
+            notification = new TemplateNotification(new Dictionary<string, string> { ["message"] = "bar" });
+        }
+
     }
 }

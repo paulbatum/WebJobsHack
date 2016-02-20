@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Microsoft.Azure.NotificationHubs;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Host.Bindings;
+using Microsoft.Azure.WebJobs.Host.Config;
+using Microsoft.Azure.WebJobs.ServiceBus;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -7,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace WebJobs.NotificationHubs
 {
-    public class NotificationHubConfiguration
+    public class NotificationHubConfiguration : IExtensionConfigProvider
     {
         internal const string NotificationHubConnectionStringName = "MS_NotificationHubConnectionString";
         internal const string NotificationHubSettingName = "MS_NotificationHubName";
@@ -30,5 +35,19 @@ namespace WebJobs.NotificationHubs
         public string ConnectionString { get; set; }
 
         public string HubName { get; set; }
+
+        public void Initialize(ExtensionConfigContext context)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            var converterManager = context.Config.GetOrCreateConverterManager();
+            converterManager.AddConverter<TemplateNotification, Notification>(x => x);
+            
+            var provider = new NotificationHubAttributeBindingProvider(context.Config.NameResolver, converterManager, this);
+            context.Config.RegisterBindingExtension(provider);
+        }
     }
 }

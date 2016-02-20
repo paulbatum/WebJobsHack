@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Host.Config;
 using System;
 using System.Collections.Generic;
@@ -22,29 +23,9 @@ namespace WebJobs.NotificationHubs
                 notificationHubConfig = new NotificationHubConfiguration();
             }
 
-            config.RegisterExtensionConfigProvider(new NotificationHubExtensionConfig(notificationHubConfig));
+            
+            config.RegisterExtensionConfigProvider(notificationHubConfig);
 
         }
-
-        private class NotificationHubExtensionConfig : IExtensionConfigProvider
-        {
-            private readonly NotificationHubConfiguration _notificationHubConfig;
-
-            public NotificationHubExtensionConfig(NotificationHubConfiguration notificationHubConfig)
-            {
-                _notificationHubConfig = notificationHubConfig;
-            }
-
-            public void Initialize(ExtensionConfigContext context)
-            {
-                if (context == null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                context.Config.RegisterBindingExtension(new NotificationHubAttributeBindingProvider(context.Config.NameResolver, _notificationHubConfig));
-            }
-        }
-
     }
 }

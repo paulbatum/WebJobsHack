@@ -17,10 +17,12 @@ namespace WebJobs.NotificationHubs
     {
         private readonly NotificationHubConfiguration _notificationHubConfig;
         private readonly INameResolver _nameResolver;
+        private readonly IConverterManager _converterManager;
 
-        public NotificationHubAttributeBindingProvider(INameResolver nameResolver, NotificationHubConfiguration config)
+        public NotificationHubAttributeBindingProvider(INameResolver nameResolver, IConverterManager converterManager, NotificationHubConfiguration config)
         {            
             _nameResolver = nameResolver;
+            _converterManager = converterManager;
             _notificationHubConfig = config;
         }
 
@@ -36,14 +38,7 @@ namespace WebJobs.NotificationHubs
             if (attribute == null)
             {
                 return Task.FromResult<IBinding>(null);
-            }
-
-            if (context.Parameter.ParameterType != typeof(Notification) &&
-                context.Parameter.ParameterType != typeof(Notification).MakeByRefType())
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture,
-                    "Can't bind NotificationHubAttribute to type '{0}'.", parameter.ParameterType));
-            }
+            }            
 
             if (string.IsNullOrEmpty(_notificationHubConfig.ConnectionString))
             {
@@ -59,36 +54,17 @@ namespace WebJobs.NotificationHubs
                     NotificationHubConfiguration.NotificationHubSettingName));
             }
 
-            var notificationHubClient = NotificationHubClient.CreateClientFromConnectionString(
-                _notificationHubConfig.ConnectionString, _notificationHubConfig.HubName);
+            var notificationHubClient = NotificationHubClient.CreateClientFromConnectionString(_notificationHubConfig.ConnectionString, _notificationHubConfig.HubName);
 
-            //return Task.FromResult<IBinding>(new NotificationHubBinding(parameter, attribute, _config, _nameResolver, context));
-            IBinding b = GenericBinder.BindCollector<Notification, NotificationHubClient>(
+            IBinding b = GenericBinder.BindCollector(
                 parameter,
-                new NotificationHubConverterManager(),
+                _converterManager,
                 notificationHubClient,
                 (t, c) => new NotificationHubAsyncCollector(t, attribute.TagExpression),
                 "",
                 (s) => null);
 
             return Task.FromResult(b);
-        }
-
-        private class NotificationHubConverterManager : IConverterManager
-        {
-            public Func<TSrc, TDest> GetConverter<TSrc, TDest>()
-            {
-                return new Func<object, object>(GetConverter) as Func<TSrc, TDest>;
-            }
-
-            private object GetConverter(object source)
-            {
-                return source;
-            }
-
-            public void AddConverter<TSrc, TDest>(Func<TSrc, TDest> converter)
-            {
-            }
         }
 
         private class NotificationHubAsyncCollector : IFlushCollector<Notification>
